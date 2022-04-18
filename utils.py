@@ -32,7 +32,6 @@ def load_checkpoint(checkpoint_file, model, optimizer, lr):
     optimizer.load_state_dict(checkpoint["optimizer"])
 
     # If we don't do this then it will just have learning rate of old checkpoint
-    # and it will lead to many hours of debugging \:
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
 
