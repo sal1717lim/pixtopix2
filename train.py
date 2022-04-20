@@ -4,12 +4,13 @@ import torch.nn as nn
 import torch.optim as optim
 import config
 from costumDataset import Kaiset
-from resUnet import Generator
-# from generator_model import Generator
+if config.Model == "ResUnet":
+    from resUnet import Generator
+else:
+    from generator_model import Generator
 from discriminator_model import Discriminator
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from torchvision.utils import save_image
 
 torch.backends.cudnn.benchmark = True
 
@@ -58,8 +59,10 @@ def train_fn(
 
 def main():
     disc = Discriminator(in_channels=3).to(config.DEVICE)
+    print(disc)
     gen = Generator().to(config.DEVICE)
-    opt_disc = optim.Adam(disc.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999),)
+    print(gen)
+    opt_disc = optim.Adam(disc.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
     opt_gen = optim.Adam(gen.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
     BCE = nn.BCEWithLogitsLoss()
     L1_LOSS = nn.L1Loss()
@@ -72,7 +75,8 @@ def main():
             config.CHECKPOINT_DISC, disc, opt_disc, config.LEARNING_RATE,
         )
 
-    train_dataset = Kaiset(path = config.TRAIN_DIR, Listset = config.TRAIN_LIST)
+    train_dataset = Kaiset(path=config.TRAIN_DIR, Listset=config.TRAIN_LIST)
+    print(len(train_dataset))
     train_loader = DataLoader(
         train_dataset,
         batch_size=config.BATCH_SIZE,
@@ -81,8 +85,8 @@ def main():
     )
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
-    val_dataset = Kaiset(path=config.VAL_DIR, Listset= config.TEST_LIST)
-    val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False)
+    val_dataset = Kaiset(path=config.VAL_DIR, Listset=config.TEST_LIST, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=config.EVAL_BATCH_SIZE, shuffle=False)
 
     for epoch in range(config.NUM_EPOCHS):
         train_fn(
@@ -90,8 +94,8 @@ def main():
         )
 
         if config.SAVE_MODEL and epoch % 5 == 0:
-            save_checkpoint(gen, opt_gen, filename=config.CHECKPOINT_GEN)
-            save_checkpoint(disc, opt_disc, filename=config.CHECKPOINT_DISC)
+            save_checkpoint(gen, opt_gen, epoch, filename=config.CHECKPOINT_GEN)
+            save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
 
         save_some_examples(gen, val_loader, epoch, folder="evaluation")
 

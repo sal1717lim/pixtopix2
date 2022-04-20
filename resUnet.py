@@ -10,14 +10,14 @@ class ResidualConv(nn.Module):
             nn.BatchNorm2d(input_dim),
             nn.ReLU(),
             nn.Conv2d(
-                input_dim, output_dim, kernel_size=3, stride=stride, padding=padding
+                input_dim, output_dim, kernel_size=3, stride=stride, padding=padding, bias=False, padding_mode="reflect"
             ),
             nn.BatchNorm2d(output_dim),
             nn.ReLU(),
-            nn.Conv2d(output_dim, output_dim, kernel_size=3, padding=1),
+            nn.Conv2d(output_dim, output_dim, kernel_size=3, padding=1, padding_mode="reflect"),
         )
         self.conv_skip = nn.Sequential(
-            nn.Conv2d(input_dim, output_dim, kernel_size=3, stride=stride, padding=1),
+            nn.Conv2d(input_dim, output_dim, kernel_size=3, stride=stride, padding=1, bias=False, padding_mode="reflect"),
             nn.BatchNorm2d(output_dim),
         )
 
@@ -40,13 +40,13 @@ class Generator(nn.Module):
     def __init__(self, channel=3, filters=[16, 32, 64, 128]):
         super(Generator, self).__init__()
         self.input_layer = nn.Sequential(
-            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
+            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1, bias=False, padding_mode="reflect"),
             nn.BatchNorm2d(filters[0]),
             nn.ReLU(),
-            nn.Conv2d(filters[0], filters[0], kernel_size=3, padding=1),
+            nn.Conv2d(filters[0], filters[0], kernel_size=3, padding=1, bias=False, padding_mode="reflect"),
         )
         self.input_skip = nn.Sequential(
-            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1),
+            nn.Conv2d(channel, filters[0], kernel_size=3, padding=1, padding_mode="reflect"),
             nn.BatchNorm2d(filters[0])
 
         )
