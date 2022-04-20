@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import config
 from costumDataset import Kaiset
-if config.Model == "ResUnet":
+if config.MODEL == "ResUnet":
     from resUnet import Generator
 else:
     from generator_model import Generator
