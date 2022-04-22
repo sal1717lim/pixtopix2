@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import config
 from costumDataset import Kaiset
+#chooses what model to train
 if config.MODEL == "ResUnet":
     from resUnet import Generator
 else:
@@ -58,15 +59,19 @@ def train_fn(
 
 
 def main():
+    #instancing the models
     disc = Discriminator(in_channels=3).to(config.DEVICE)
-    print(disc)
-    gen = Generator().to(config.DEVICE)
-    print(gen)
+    #print(disc)
+    gen = Generator(init_weight=config.INIT_WEIGHTS).to(config.DEVICE)
+    #print(gen)
+    #instancing the optims
     opt_disc = optim.Adam(disc.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
     opt_gen = optim.Adam(gen.parameters(), lr=config.LEARNING_RATE, betas=(0.5, 0.999))
+    #instancing the Loss-functions
     BCE = nn.BCEWithLogitsLoss()
     L1_LOSS = nn.L1Loss()
 
+    #if true loads the checkpoit in the ./
     if config.LOAD_MODEL:
         load_checkpoint(
             config.CHECKPOINT_GEN, gen, opt_gen, config.LEARNING_RATE,
@@ -75,16 +80,19 @@ def main():
             config.CHECKPOINT_DISC, disc, opt_disc, config.LEARNING_RATE,
         )
 
+    #training data loading
     train_dataset = Kaiset(path=config.TRAIN_DIR, Listset=config.TRAIN_LIST)
-    print(len(train_dataset))
     train_loader = DataLoader(
         train_dataset,
         batch_size=config.BATCH_SIZE,
         shuffle=True,
         num_workers=config.NUM_WORKERS,
     )
+    #enabling MultiPrecision Mode, the optimise performance
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
+
+    #evauation data loading
     val_dataset = Kaiset(path=config.VAL_DIR, Listset=config.TEST_LIST, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config.EVAL_BATCH_SIZE, shuffle=False)
 

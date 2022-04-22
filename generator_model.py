@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from utils import init_weights
 
 class Block(nn.Module):
     def __init__(self, in_channels, out_channels, down=True, act="relu", use_dropout=False):
@@ -23,7 +23,7 @@ class Block(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, in_channels=3, features=64):
+    def __init__(self, in_channels=3, features=64, init_weight=True):
         super().__init__()
         self.initial_down = nn.Sequential(
             nn.Conv2d(in_channels, features, 4, 2, 1, padding_mode="reflect"),
@@ -70,6 +70,9 @@ class Generator(nn.Module):
             nn.ConvTranspose2d(features * 2, in_channels, kernel_size=4, stride=2, padding=1),
             nn.Tanh(),
         )
+        if init_weight:
+            init_weights(self)
+            print("weights initialised using Normal distribution around 0 with std of 0.02")
 
     def forward(self, x):
         d1 = self.initial_down(x)

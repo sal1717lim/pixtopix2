@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from utils import init_weights
 
 
 class CNNBlock(nn.Module):
@@ -18,7 +19,7 @@ class CNNBlock(nn.Module):
 
 
 class Discriminator(nn.Module):
-    def __init__(self, in_channels=3, features=[64, 128, 256, 512]):
+    def __init__(self, in_channels=3, features=[64, 128, 256, 512], init_weight = True):
         super().__init__()
         self.initial = nn.Sequential(
             nn.Conv2d(
@@ -47,6 +48,10 @@ class Discriminator(nn.Module):
         )
 
         self.model = nn.Sequential(*layers)
+        #initialising the wwights using the normal distro
+        if init_weight:
+            init_weights(self)
+            print("weights initialised using Normal distribution around 0 with std of 0.02")
 
     def forward(self, x, y):
         x = torch.cat([x, y], dim=1)

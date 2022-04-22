@@ -6,7 +6,7 @@ import random
 import os
 from torch.utils.data import DataLoader, Dataset
 
-
+#parsing and pre-processing the data
 class Kaiset(Dataset):
     def __init__(self, path, Listset=["set00", 'set01', 'set02', 'set06', 'set07'], shuffle=False):
         self.path = path
@@ -17,6 +17,7 @@ class Kaiset(Dataset):
                 _tmp = [self.path + '/' + sets + "/" + v + '/visible/' + x for x in _tmp]
                 self.data.extend(_tmp)
         self.nbdata = len(self.data)
+        #if shuffle true, the data will be shuffeled before loading (used only in test data, in the trainign data is shuffeled using the loaded)
         if shuffle:
             for i in range(3):
                 random.shuffle(self.data)
@@ -33,7 +34,7 @@ class Kaiset(Dataset):
     def __len__(self):
         return self.nbdata
 
-
+#testing if everything works proprely
 if __name__ == "__main__":
     dataset = Kaiset(r'C:\Users\dell\Desktop\safe')
     loader = DataLoader(dataset, batch_size=6, shuffle=True)

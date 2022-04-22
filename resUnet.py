@@ -1,6 +1,7 @@
-
 from torch import nn
 import torch
+from utils import init_weights
+
 
 class ResidualConv(nn.Module):
     def __init__(self, input_dim, output_dim, stride, padding):
@@ -17,12 +18,12 @@ class ResidualConv(nn.Module):
             nn.Conv2d(output_dim, output_dim, kernel_size=3, padding=1, padding_mode="reflect"),
         )
         self.conv_skip = nn.Sequential(
-            nn.Conv2d(input_dim, output_dim, kernel_size=3, stride=stride, padding=1, bias=False, padding_mode="reflect"),
+            nn.Conv2d(input_dim, output_dim, kernel_size=3, stride=stride, padding=1, bias=False,
+                      padding_mode="reflect"),
             nn.BatchNorm2d(output_dim),
         )
 
     def forward(self, x):
-
         return self.conv_block(x) + self.conv_skip(x)
 
 
@@ -32,12 +33,12 @@ class Upsample(nn.Module):
 
         self.upsample = nn.Upsample(output_dim, mode='bilinear')
 
-
     def forward(self, x):
         return self.upsample(x)
 
+
 class Generator(nn.Module):
-    def __init__(self, channel=3, filters=[16, 32, 64, 128]):
+    def __init__(self, channel=3, filters=[16, 32, 64, 128], init_weight=True):
         super(Generator, self).__init__()
         self.input_layer = nn.Sequential(
             nn.Conv2d(channel, filters[0], kernel_size=3, padding=1, bias=False, padding_mode="reflect"),
@@ -56,19 +57,23 @@ class Generator(nn.Module):
 
         self.bridge = ResidualConv(filters[2], filters[3], 2, 1)
 
-        self.upsample_1 = Upsample((64,64))
+        self.upsample_1 = Upsample((64, 64))
         self.up_residual_conv1 = ResidualConv(filters[3] + filters[2], filters[2], 1, 1)
 
-        self.upsample_2 = Upsample((128,128))
+        self.upsample_2 = Upsample((128, 128))
         self.up_residual_conv2 = ResidualConv(filters[2] + filters[1], filters[1], 1, 1)
 
-        self.upsample_3 = Upsample((256,256))
+        self.upsample_3 = Upsample((256, 256))
         self.up_residual_conv3 = ResidualConv(filters[1] + filters[0], filters[0], 1, 1)
 
         self.output_layer = nn.Sequential(
             nn.Conv2d(filters[0], channel, 1, 1),
             nn.Tanh(),
         )
+        #initialising the wwights using the normal distro
+        if init_weight:
+            init_weights(self)
+            print("weights initialised using Normal distribution around 0 with std of 0.02")
 
     def forward(self, x):
         # Encode
