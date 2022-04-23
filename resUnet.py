@@ -73,7 +73,7 @@ class Generator(nn.Module):
         #initialising the wwights using the normal distro
         if init_weight:
             init_weights(self)
-            print("weights initialised using Normal distribution around 0 with std of 0.02")
+            print("ResUnet weights initialised using Normal distribution around 0 with std of 0.02")
 
     def forward(self, x):
         # Encode

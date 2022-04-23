@@ -22,8 +22,8 @@ IMAGE_SIZE = 256
 #when true, initializes the wieghts with a normal distro with mean 0 and std 0.02 (paper values) if False random Init
 INIT_WEIGHTS = True
 CHANNELS_IMG = 3
-L1_LAMBDA = 4
-NUM_EPOCHS = 30
+L1_LAMBDA = 10
+NUM_EPOCHS = 10
 #when true loads the models saved as "disc.pth.tar" and "gen.pth.tar", they need to be in ./
 LOAD_MODEL = False
 #when true saves a checkpoint every 5 epochs
