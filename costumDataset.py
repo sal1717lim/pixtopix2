@@ -12,7 +12,7 @@ class Kaiset(Dataset):
         self.path = path
         self.data = []
         self.Listset=Listset[:-1] if train else Listset[-1:]
-        for sets in Listset[:-1]:
+        for sets in self.Listset[:-1]:
             for v in os.listdir(self.path + '/' + sets):
                 _tmp = os.listdir(self.path + '/' + sets + "/" + v + '/visible')
                 _tmp = [self.path + '/' + sets + "/" + v + '/visible/' + x for x in _tmp]
