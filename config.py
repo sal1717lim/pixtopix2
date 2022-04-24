@@ -3,10 +3,13 @@ from torchvision import transforms
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 #paths and sets for the data
-TRAIN_DIR = r'C:\Users\dell\Desktop\safe'
-TRAIN_LIST = ["set00" , 'set01' , 'set02' , 'set06' , 'set07']
-TEST_LIST = ["set08"]
-VAL_DIR = r'C:\Users\dell\Desktop\safe'
+paths = [r'C:\Users\dell\Desktop\safe', r'C:\Users\dell\Desktop\safe night']
+TRAIN_DIR = paths[1]
+#TRAIN_LIST = ["set00" , 'set01' , 'set02' , 'set06' , 'set07']
+TRAIN_LIST = ["set03" , 'set04' , 'set05' , 'set09' , 'set10']
+TEST_LIST = ["set11"]
+#TEST_LIST = ["set08"]
+VAL_DIR = paths[1]
 #the list of models implemented.
 MODEL_LIST = ["ResUnet", "Unet"]
 #choosing the model to train.
@@ -23,7 +26,7 @@ IMAGE_SIZE = 256
 INIT_WEIGHTS = True
 CHANNELS_IMG = 3
 L1_LAMBDA = 10
-NUM_EPOCHS = 10
+NUM_EPOCHS = 100
 #when true loads the models saved as "disc.pth.tar" and "gen.pth.tar", they need to be in ./
 LOAD_MODEL = False
 #when true saves a checkpoint every 5 epochs
