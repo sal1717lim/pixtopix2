@@ -3,10 +3,10 @@ from torchvision import transforms
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 #paths and sets for the data
-TRAIN_DIR = r'../input/thermal-images/kaist-cvpr15/images'
+TRAIN_DIR = r'E:\KAIST-dataset\kaist-cvpr15\images'
 TRAIN_LIST = ["set00" , 'set01' , 'set02' , 'set06' , 'set07']
 TEST_LIST = ["set08"]
-VAL_DIR = r'../input/thermal-images/kaist-cvpr15/images'
+VAL_DIR = r'E:\KAIST-dataset\kaist-cvpr15\images'
 #the list of models implemented.
 MODEL_LIST = ["ResUnet", "Unet"]
 #choosing the model to train.
