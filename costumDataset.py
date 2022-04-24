@@ -8,10 +8,11 @@ from torch.utils.data import DataLoader, Dataset
 
 #parsing and pre-processing the data
 class Kaiset(Dataset):
-    def __init__(self, path, Listset=["set00", 'set01', 'set02', 'set06', 'set07'], shuffle=False):
+    def __init__(self, path, Listset=["set00", 'set01', 'set02', 'set06', 'set07','set08'],train=True, shuffle=False):
         self.path = path
         self.data = []
-        for sets in Listset:
+        self.Listset=Listset[:-1] if train else Listset[-1:]
+        for sets in self.Listset:
             for v in os.listdir(self.path + '/' + sets):
                 _tmp = os.listdir(self.path + '/' + sets + "/" + v + '/visible')
                 _tmp = [self.path + '/' + sets + "/" + v + '/visible/' + x for x in _tmp]

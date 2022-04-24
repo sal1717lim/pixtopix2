@@ -3,17 +3,17 @@ from torchvision import transforms
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 #paths and sets for the data
-TRAIN_DIR = r'C:\Users\dell\Desktop\safe'
+TRAIN_DIR = r'../input/thermal-images/kaist-cvpr15/images'
 TRAIN_LIST = ["set00" , 'set01' , 'set02' , 'set06' , 'set07']
 TEST_LIST = ["set08"]
-VAL_DIR = r'C:\Users\dell\Desktop\safe'
+VAL_DIR = r'../input/thermal-images/kaist-cvpr15/images'
 #the list of models implemented.
 MODEL_LIST = ["ResUnet", "Unet"]
 #choosing the model to train.
 MODEL = MODEL_LIST[0]
 #hyper-parameters
 LEARNING_RATE = 2e-4
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 #the number of images saved by save_some_images
 EVAL_BATCH_SIZE = 16
 #the ressources allocated to loading the data
