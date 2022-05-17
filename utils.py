@@ -2,14 +2,15 @@ import torch
 import config
 from torchvision.utils import save_image
 import torch.nn as nn
+from pytorch_msssim import SSIM
 
 #saves 16 images from a loader
 def save_some_examples(gen, val_loader, epoch, folder):
-    x, y = next(iter(val_loader))
-    x, y = x.to(config.DEVICE), y.to(config.DEVICE)
+    x,x2, y = next(iter(val_loader))
+    x,x2, y = x.to(config.DEVICE),x2.to(config.DEVICE), y.to(config.DEVICE)
     gen.eval()
     with torch.no_grad():
-        y_fake = gen(x)
+        y_fake = gen(x,x2)
         y_fake = y_fake * 0.5 + 0.5  # remove normalization#
         save_image(y_fake, folder + f"/y_gen_{epoch}.png")
         if epoch == 0:
@@ -42,3 +43,11 @@ def init_weights(model):
     for m in model.modules():
         if isinstance(m, nn.Conv2d) or isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.ConvTranspose2d):
             nn.init.normal_(m.weight, mean=0, std=0.02)
+
+
+class SSIMLoss(SSIM):
+    def __init__(self):
+        super(SSIMLoss, self).__init__(data_range=1, size_average=True, channel=3)
+
+    def forward(self, x, y):
+        return 1. - super().forward(x, y)

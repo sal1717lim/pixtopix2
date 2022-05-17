@@ -17,12 +17,11 @@ from time import localtime
 import os
 if not os.path.exists("evaluation"):
     os.mkdir("evaluation")
-writer=SummaryWriter("train{}-{}-{}".format(localtime().tm_mon,localtime().tm_mday,localtime().tm_hour))
 torch.backends.cudnn.benchmark = True
 
 
 def train_fn(
-    disc, gen, loader, opt_disc, opt_gen, l1_loss, bce, g_scaler, d_scaler,epoch=0
+    disc, gen, loader, opt_disc, opt_gen, l1_loss, bce, g_scaler, d_scaler, writer, epoch=0
 ):
     loop = tqdm(loader, leave=True)
 
@@ -66,7 +65,7 @@ def train_fn(
                 L1    =L1.item()
             )
 def test_fn(
-    disc, gen, loader, l1_loss, bce, epoch=0
+    disc, gen, loader, l1_loss, bce, writer, epoch=0
 ):
     loop = tqdm(loader, leave=True)
     disc.eval()
@@ -112,6 +111,7 @@ def test_fn(
     return torch.tensor(resultat).mean()
 
 def main():
+    writer = SummaryWriter("train{}-{}-{}".format(localtime().tm_mon, localtime().tm_mday, localtime().tm_hour))
     #instancing the models
     disc = Discriminator(in_channels=3).to(config.DEVICE)
     #print(disc)
@@ -152,23 +152,21 @@ def main():
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
 
-    #evauation data loading
-    val_dataset = Kaiset(path=config.VAL_DIR, Listset=config.TEST_LIST, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=config.EVAL_BATCH_SIZE, shuffle=False)
     best=10000000
     resultat=1
     for epoch in range(config.NUM_EPOCHS):
+        print("\n epoch", epoch, "\n")
         train_fn(
-           disc, gen, train_loader, opt_disc, opt_gen, L1_LOSS, BCE, g_scaler, d_scaler,epoch=epoch
+           disc, gen, train_loader, opt_disc, opt_gen, L1_LOSS, BCE, g_scaler, d_scaler, writer, epoch=epoch
         )
-        resultat=test_fn(disc, gen, test_loader,  L1_LOSS, BCE, epoch=epoch)
+        resultat=test_fn(disc, gen, test_loader,  L1_LOSS, BCE, writer, epoch=epoch)
         if best>resultat:
             best=resultat
             print("improvement of the loss from {} to {}".format(best,resultat))
             save_checkpoint(gen, opt_gen, epoch, filename=config.CHECKPOINT_GEN)
             save_checkpoint(disc, opt_disc, epoch, filename=config.CHECKPOINT_DISC)
 
-        save_some_examples(gen, val_loader, epoch, folder="evaluation")
+        save_some_examples(gen, test_loader, epoch, folder="evaluation")
 
 
 if __name__ == "__main__":
