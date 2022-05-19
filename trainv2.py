@@ -15,6 +15,7 @@ from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from time import localtime
 import os
+import sys
 if not os.path.exists("evaluation"):
     os.mkdir("evaluation")
 torch.backends.cudnn.benchmark = True
@@ -137,14 +138,14 @@ def main():
 
 
     #training data loading
-    train_dataset = Kaisetdepth(depthPath=r"C:\Users\dell\Desktop\archive (2)\depthImages",path=config.TRAIN_DIR, Listset=config.TRAIN_LIST)
+    train_dataset = Kaisetdepth(depthPath=sys.argv[2],path=sys.argv[1], Listset=config.TRAIN_LIST)
     train_loader = DataLoader(
         train_dataset,
         batch_size=config.BATCH_SIZE,
         shuffle=True,
         num_workers=config.NUM_WORKERS,
     )
-    test_dataset = Kaisetdepth(depthPath=r"C:\Users\dell\Desktop\archive (2)\depthImages",path=config.TRAIN_DIR,train=False, Listset=config.TRAIN_LIST)
+    test_dataset = Kaisetdepth(depthPath=sys.argv[2],path=sys.argv[1],train=False, Listset=config.TRAIN_LIST)
     test_loader = DataLoader(
         test_dataset,
         batch_size=config.BATCH_SIZE,

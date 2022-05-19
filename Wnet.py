@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from torchinfo import summary
+
 
 class Upsample(nn.Module):
     def __init__(self, output_dim):
